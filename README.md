@@ -12,3 +12,10 @@ values. It consistently out-performs an FNV-based hash within rustc
 itself -- the collision rate is similar or slightly worse than FNV,
 but the speed of the hash function itself is much higher because it
 works on up to 8 bytes at a time.
+
+## Usage
+
+```
+use rustc_hash::FxHashMap;
+let map: FxHashMap<u32, u32> = FxHashMap::default();
+```

@@ -8,23 +8,26 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! Fast, non-cryptographic hash used by rustc and Firefox.
+//!
+//! # Example
+//!
+//! ```rust
+//! use rustc_hash::FxHashMap;
+//! let mut map: FxHashMap<u32, u32> = FxHashMap::default();
+//! map.insert(22, 44);
+//! ```
+
 use std::collections::{HashMap, HashSet};
 use std::default::Default;
-use std::hash::{Hasher, Hash, BuildHasherDefault};
+use std::hash::{Hasher, BuildHasherDefault};
 use std::ops::BitXor;
 
+/// Type alias for a hashmap using the `fx` hash algorithm.
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
+
+/// Type alias for a hashmap using the `fx` hash algorithm.
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
-
-#[allow(non_snake_case)]
-pub fn FxHashMap<K: Hash + Eq, V>() -> FxHashMap<K, V> {
-    HashMap::default()
-}
-
-#[allow(non_snake_case)]
-pub fn FxHashSet<V: Hash + Eq>() -> FxHashSet<V> {
-    HashSet::default()
-}
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
 /// by default uses SipHash which isn't quite as speedy as we want. In the
