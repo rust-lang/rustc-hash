@@ -9,3 +9,4 @@ keywords = ["hash", "fxhash", "rustc"]
 repository = "https://github.com/rust-lang-nursery/rustc-hash"
 
 [dependencies]
+byteorder = "1.1"
