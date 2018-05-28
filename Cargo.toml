@@ -1,6 +1,6 @@
 [package]
 name = "rustc-hash"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["The Rust Project Developers"]
 description = "speed, non-cryptographic hash used in rustc"
 license = "Apache-2.0/MIT"
