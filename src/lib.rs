@@ -24,7 +24,6 @@ use std::collections::{HashMap, HashSet};
 use std::default::Default;
 use std::hash::{Hasher, BuildHasherDefault};
 use std::ops::BitXor;
-use std::mem::size_of;
 
 use byteorder::{ByteOrder, NativeEndian};
 
@@ -69,28 +68,43 @@ impl FxHasher {
 }
 
 impl Hasher for FxHasher {
+    #[cfg(target_pointer_width = "32")]
     #[inline]
     fn write(&mut self, mut bytes: &[u8]) {
-        #[cfg(target_pointer_width = "32")]
-        let read_usize = |bytes| NativeEndian::read_u32(bytes);
-        #[cfg(target_pointer_width = "64")]
-        let read_usize = |bytes| NativeEndian::read_u64(bytes);
-
+        // avoids repeated *self dereference
         let mut hash = FxHasher { hash: self.hash };
-        assert!(size_of::<usize>() <= 8);
-        while bytes.len() >= size_of::<usize>() {
-            hash.add_to_hash(read_usize(bytes) as usize);
-            bytes = &bytes[size_of::<usize>()..];
-        }
-        if (size_of::<usize>() > 4) && (bytes.len() >= 4) {
+        while bytes.len() >= 4 {
             hash.add_to_hash(NativeEndian::read_u32(bytes) as usize);
             bytes = &bytes[4..];
         }
-        if (size_of::<usize>() > 2) && bytes.len() >= 2 {
+        if bytes.len() >= 2 {
             hash.add_to_hash(NativeEndian::read_u16(bytes) as usize);
             bytes = &bytes[2..];
         }
-        if (size_of::<usize>() > 1) && bytes.len() >= 1 {
+        if !bytes.is_empty() {
+            hash.add_to_hash(bytes[0] as usize);
+        }
+        self.hash = hash.hash;
+    }
+
+    #[cfg(target_pointer_width = "64")]
+    #[inline]
+    fn write(&mut self, mut bytes: &[u8]) {
+        // avoids repeated *self dereference
+        let mut hash = FxHasher { hash: self.hash };
+        while bytes.len() >= 8 {
+            hash.add_to_hash(NativeEndian::read_u64(bytes) as usize);
+            bytes = &bytes[8..];
+        }
+        if bytes.len() >= 4 {
+            hash.add_to_hash(NativeEndian::read_u32(bytes) as usize);
+            bytes = &bytes[4..];
+        }
+        if bytes.len() >= 2 {
+            hash.add_to_hash(NativeEndian::read_u16(bytes) as usize);
+            bytes = &bytes[2..];
+        }
+        if !bytes.is_empty() {
             hash.add_to_hash(bytes[0] as usize);
         }
         self.hash = hash.hash;
