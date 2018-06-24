@@ -28,11 +28,14 @@ use std::mem::size_of;
 
 use byteorder::{ByteOrder, NativeEndian};
 
-/// Type alias for a hashmap using the `fx` hash algorithm.
-pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
+/// A builder for default `fx` hashers.
+pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
-pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
+pub type FxHashMap<K, V> = HashMap<K, V, FxBuildHasher>;
+
+/// Type alias for a hashmap using the `fx` hash algorithm.
+pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
 /// by default uses SipHash which isn't quite as speedy as we want. In the
