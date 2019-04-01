@@ -24,6 +24,7 @@ use std::collections::{HashMap, HashSet};
 use std::default::Default;
 use std::hash::{Hasher, BuildHasherDefault};
 use std::ops::BitXor;
+#[cfg(not(target_pointer_width = "64"))]
 use std::mem::size_of;
 
 use byteorder::{ByteOrder, NativeEndian};
@@ -70,16 +71,52 @@ impl FxHasher {
 
 impl Hasher for FxHasher {
     #[inline]
+    #[cfg(target_pointer_width = "64")]
     fn write(&mut self, mut bytes: &[u8]) {
-        #[cfg(target_pointer_width = "32")]
-        let read_usize = |bytes| NativeEndian::read_u32(bytes);
-        #[cfg(target_pointer_width = "64")]
-        let read_usize = |bytes| NativeEndian::read_u64(bytes);
+        let mut hash = FxHasher { hash: self.hash };
+ 
+        if bytes.len() > 8 {
+            while bytes.len() > 16 {
+                hash.add_to_hash(NativeEndian::read_u64(&bytes[0..8]) as usize);
+                bytes = &bytes[8..];
+            }
+            hash.add_to_hash(NativeEndian::read_u64(&bytes[0..8]) as usize);
+            // Getting a reference to the last 8 bytes is safe
+            // since we know there's at least 8 bytes left.
+            let tail: &[u8] = unsafe {
+                &bytes.get_unchecked((bytes.len() - 8)..bytes.len())
+            };
+            hash.add_to_hash(NativeEndian::read_u64(tail) as usize);
+        } else {
+            if bytes.len() >= 2 {
+                if bytes.len() >= 4 {
+                    let mut buf = [0; 8];
+                    buf[0..4].copy_from_slice(&bytes[0..4]);
+                    buf[4..8].copy_from_slice(&bytes[(bytes.len() - 4)..bytes.len()]);
+                    hash.add_to_hash(NativeEndian::read_u64(&buf) as usize);
+                } else {
+                    let mut buf = [0; 4];
+                    buf[0..2].copy_from_slice(&bytes[0..2]);
+                    buf[2..4].copy_from_slice(&bytes[(bytes.len() - 2)..bytes.len()]);
+                    hash.add_to_hash(NativeEndian::read_u32(&buf) as usize);
+                }
+            } else {
+                if bytes.len() >= 1 {
+                    hash.add_to_hash(bytes[0] as usize);
+                }
+            }
+        }
 
+        self.hash = hash.hash;
+    }
+
+    #[inline]
+    #[cfg(target_pointer_width = "32")]
+    fn write(&mut self, mut bytes: &[u8]) {
         let mut hash = FxHasher { hash: self.hash };
         assert!(size_of::<usize>() <= 8);
         while bytes.len() >= size_of::<usize>() {
-            hash.add_to_hash(read_usize(bytes) as usize);
+            hash.add_to_hash(NativeEndian::read_u32(bytes) as usize);
             bytes = &bytes[size_of::<usize>()..];
         }
         if (size_of::<usize>() > 4) && (bytes.len() >= 4) {

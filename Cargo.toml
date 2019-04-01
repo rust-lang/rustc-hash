@@ -10,3 +10,6 @@ repository = "https://github.com/rust-lang-nursery/rustc-hash"
 
 [dependencies]
 byteorder = "1.1"
+
+[profile.release]
+codegen-units = 1
