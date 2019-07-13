@@ -18,21 +18,30 @@
 //! map.insert(22, 44);
 //! ```
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
 extern crate byteorder;
 
+#[cfg(feature = "std")]
+extern crate core;
+
+#[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
-use std::default::Default;
-use std::hash::{Hasher, BuildHasherDefault};
-use std::ops::BitXor;
-use std::mem::size_of;
+
+use core::default::Default;
+use core::hash::Hasher;
+use core::ops::BitXor;
+use core::mem::size_of;
 
 use byteorder::{ByteOrder, NativeEndian};
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
-pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
+#[cfg(feature = "std")]
+pub type FxHashMap<K, V> = HashMap<K, V, std::hash::BuildHasherDefault<FxHasher>>;
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
-pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
+#[cfg(feature = "std")]
+pub type FxHashSet<V> = HashSet<V, std::hash::BuildHasherDefault<FxHasher>>;
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
 /// by default uses SipHash which isn't quite as speedy as we want. In the

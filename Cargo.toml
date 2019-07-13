@@ -8,5 +8,10 @@ readme = "README.md"
 keywords = ["hash", "fxhash", "rustc"]
 repository = "https://github.com/rust-lang-nursery/rustc-hash"
 
+[features]
+std = []
+default = ["std"]
+
 [dependencies]
-byteorder = "1.1"
+# We don't use the `byteorder/std` feature, even when we use std ourselves.
+byteorder = { version = "1.1", default-features = false }
