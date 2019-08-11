@@ -13,9 +13,14 @@
 //! # Example
 //!
 //! ```rust
+//! # #[cfg(feature = "std")]
+//! # fn main() {
 //! use rustc_hash::FxHashMap;
 //! let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 //! map.insert(22, 44);
+//! # }
+//! # #[cfg(not(feature = "std"))]
+//! # fn main() { }
 //! ```
 
 #![cfg_attr(not(feature = "std"), no_std)]
