@@ -18,15 +18,12 @@
 //! map.insert(22, 44);
 //! ```
 
-extern crate byteorder;
-
 use std::collections::{HashMap, HashSet};
+use std::convert::TryInto;
 use std::default::Default;
 use std::hash::{Hasher, BuildHasherDefault};
 use std::ops::BitXor;
 use std::mem::size_of;
-
-use byteorder::{ByteOrder, NativeEndian};
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
@@ -72,9 +69,9 @@ impl Hasher for FxHasher {
     #[inline]
     fn write(&mut self, mut bytes: &[u8]) {
         #[cfg(target_pointer_width = "32")]
-        let read_usize = |bytes| NativeEndian::read_u32(bytes);
+        let read_usize = |bytes: &[u8]| u32::from_ne_bytes(bytes[..4].try_into().unwrap());
         #[cfg(target_pointer_width = "64")]
-        let read_usize = |bytes| NativeEndian::read_u64(bytes);
+        let read_usize = |bytes: &[u8]| u64::from_ne_bytes(bytes[..8].try_into().unwrap());
 
         let mut hash = FxHasher { hash: self.hash };
         assert!(size_of::<usize>() <= 8);
@@ -83,11 +80,11 @@ impl Hasher for FxHasher {
             bytes = &bytes[size_of::<usize>()..];
         }
         if (size_of::<usize>() > 4) && (bytes.len() >= 4) {
-            hash.add_to_hash(NativeEndian::read_u32(bytes) as usize);
+            hash.add_to_hash(u32::from_ne_bytes(bytes[..4].try_into().unwrap()) as usize);
             bytes = &bytes[4..];
         }
         if (size_of::<usize>() > 2) && bytes.len() >= 2 {
-            hash.add_to_hash(NativeEndian::read_u16(bytes) as usize);
+            hash.add_to_hash(u16::from_ne_bytes(bytes[..2].try_into().unwrap()) as usize);
             bytes = &bytes[2..];
         }
         if (size_of::<usize>() > 1) && bytes.len() >= 1 {
