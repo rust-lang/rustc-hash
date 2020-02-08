@@ -20,6 +20,7 @@ works on up to 8 bytes at a time.
 
 ```rust
 use rustc_hash::FxHashMap;
-let map: FxHashMap<u32, u32> = FxHashMap::default();
+
+let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 map.insert(22, 44);
 ```
