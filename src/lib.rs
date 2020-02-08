@@ -13,22 +13,37 @@
 //! # Example
 //!
 //! ```rust
+//! # #[cfg(feature = "std")]
+//! # fn main() {
 //! use rustc_hash::FxHashMap;
 //! let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 //! map.insert(22, 44);
+//! # }
+//! # #[cfg(not(feature = "std"))]
+//! # fn main() { }
 //! ```
 
+#![no_std]
+
+#[cfg(feature = "std")]
+extern crate std;
+
+use core::convert::TryInto;
+use core::default::Default;
+#[cfg(feature = "std")]
+use core::hash::BuildHasherDefault;
+use core::hash::Hasher;
+use core::mem::size_of;
+use core::ops::BitXor;
+#[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
-use std::convert::TryInto;
-use std::default::Default;
-use std::hash::{Hasher, BuildHasherDefault};
-use std::ops::BitXor;
-use std::mem::size_of;
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
+#[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
+#[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
@@ -43,7 +58,7 @@ pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 /// similar or slightly worse than FNV, but the speed of the hash function
 /// itself is much higher because it works on up to 8 bytes at a time.
 pub struct FxHasher {
-    hash: usize
+    hash: usize,
 }
 
 #[cfg(target_pointer_width = "32")]

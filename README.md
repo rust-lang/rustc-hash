@@ -24,3 +24,15 @@ use rustc_hash::FxHashMap;
 let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 map.insert(22, 44);
 ```
+
+### `no_std`
+
+This crate can be used as a `no_std` crate by disabling the `std`
+feature, which is on by default, as follows:
+
+```toml
+rustc-hash = { version = "1.0", default-features = false }
+```
+
+In this configuration, `FxHasher` is the only export, and the
+`FxHashMap`/`FxHashSet` type aliases are omitted.
