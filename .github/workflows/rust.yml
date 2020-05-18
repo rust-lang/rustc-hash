@@ -1,0 +1,13 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: rust-lang/simpleinfra/github-actions/simple-ci@master
+    strategy:
+      matrix:
+        os: [ubuntu, windows, macos]
