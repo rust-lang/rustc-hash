@@ -34,6 +34,7 @@ use core::default::Default;
 use core::hash::BuildHasherDefault;
 use core::hash::Hasher;
 use core::mem::size_of;
+#[cfg(target_pointer_width = "32")]
 use core::ops::BitXor;
 #[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
@@ -50,21 +51,9 @@ pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 /// by default uses SipHash which isn't quite as speedy as we want. In the
 /// compiler we're not really worried about DOS attempts, so we use a fast
 /// non-cryptographic hash.
-///
-/// This is the same as the algorithm used by Firefox -- which is a homespun
-/// one not based on any widely-known algorithm -- though modified to produce
-/// 64-bit hash values instead of 32-bit hash values. It consistently
-/// out-performs an FNV-based hash within rustc itself -- the collision rate is
-/// similar or slightly worse than FNV, but the speed of the hash function
-/// itself is much higher because it works on up to 8 bytes at a time.
 pub struct FxHasher {
     hash: usize,
 }
-
-#[cfg(target_pointer_width = "32")]
-const K: usize = 0x9e3779b9;
-#[cfg(target_pointer_width = "64")]
-const K: usize = 0x517cc1b727220a95;
 
 impl Default for FxHasher {
     #[inline]
@@ -75,8 +64,19 @@ impl Default for FxHasher {
 
 impl FxHasher {
     #[inline]
+    #[cfg(target_pointer_width = "32")]
     fn add_to_hash(&mut self, i: usize) {
-        self.hash = self.hash.rotate_left(5).bitxor(i).wrapping_mul(K);
+        self.hash = self.hash.rotate_left(5).bitxor(i).wrapping_mul(0x9e3779b9);
+    }
+
+    #[inline]
+    #[cfg(target_pointer_width = "64")]
+    fn add_to_hash(&mut self, i: usize) {
+        self.hash = self
+            .hash
+            .rotate_right(31)
+            .wrapping_add(i)
+            .wrapping_mul(0xcfee444d8b59a89b);
     }
 }
 
