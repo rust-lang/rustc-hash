@@ -39,10 +39,30 @@ use core::ops::BitXor;
 use std::collections::{HashMap, HashSet};
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
+///
+/// Note that some methods that are implemented for `HashMap` (e.g. `new`, 
+/// `with_capacity`) are not implemented for `FxHashMap`.
+///
+/// ```
+/// # use crate::FxHashMap;
+/// // construct a new, empty, `FxHashMap`
+/// let _new_hashmap = FxHashMap::default();
+/// // construct an `FxHashMap` with the provided capacity
+/// let _with_cap = FxHashMap::with_capacity_and_hasher(12, Default::default());
+/// ```
 #[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 
 /// Type alias for a hashmap using the `fx` hash algorithm.
+///
+/// Note that some methods that are implemented for `HashSet` (e.g. `new`) 
+/// are not implemented for `FxHashSet`.
+///
+/// /// ```
+/// # use crate::FxHashSet;
+/// // construct a new, empty, `FxHashSet`
+/// let _new_hashmap = FxHashSet::default();
+/// ```
 #[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 
