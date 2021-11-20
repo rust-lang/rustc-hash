@@ -8,7 +8,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! Fast, non-cryptographic hash used by rustc and Firefox.
+//! A speedy, non-cryptographic hashing algorithm used by `rustc` and Firefox.
 //!
 //! # Example
 //!
@@ -16,6 +16,7 @@
 //! # #[cfg(feature = "std")]
 //! # fn main() {
 //! use rustc_hash::FxHashMap;
+//!
 //! let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 //! map.insert(22, 44);
 //! # }
@@ -46,7 +47,7 @@ use core::ops::BitXor;
 #[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
 
-/// Type alias for a hashmap using the `fx` hash algorithm.
+/// Type alias for a hash map that uses the Fx hashing algorithm.
 #[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 
