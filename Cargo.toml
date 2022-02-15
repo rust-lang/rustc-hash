@@ -9,5 +9,9 @@ keywords = ["hash", "hasher", "fxhash", "rustc"]
 repository = "https://github.com/rust-lang-nursery/rustc-hash"
 
 [features]
-std = []
 default = ["std"]
+std = []
+rand = ["dep:rand", "std"]
+
+[dependencies]
+rand = { version = "0.8", optional = true }

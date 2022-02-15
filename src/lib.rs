@@ -28,6 +28,12 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+#[cfg(feature = "rand")]
+extern crate rand;
+
+#[cfg(feature = "rand")]
+mod random_state;
+
 use core::convert::TryInto;
 use core::default::Default;
 #[cfg(feature = "std")]
@@ -45,6 +51,9 @@ pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 /// Type alias for a hashset using the `fx` hash algorithm.
 #[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
+
+#[cfg(feature = "rand")]
+pub use random_state::{FxHashMapRand, FxHashSetRand, FxRandomState};
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
 /// by default uses SipHash which isn't quite as speedy as we want. In the
@@ -161,7 +170,7 @@ mod tests {
     compile_error!("The test suite only supports 64 bit and 32 bit usize");
 
     use crate::FxHasher;
-    use core::hash::{BuildHasher, BuildHasherDefault, Hash};
+    use core::hash::{BuildHasher, BuildHasherDefault, Hash, Hasher};
 
     macro_rules! test_hash {
         (
