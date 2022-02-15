@@ -67,6 +67,13 @@ const K: usize = 0x9e3779b9;
 #[cfg(target_pointer_width = "64")]
 const K: usize = 0x517cc1b727220a95;
 
+impl FxHasher {
+    /// Creates `fx` hasher with a given seed.
+    pub fn with_seed(seed: usize) -> FxHasher {
+        FxHasher { hash: seed }
+    }
+}
+
 impl Default for FxHasher {
     #[inline]
     fn default() -> FxHasher {
