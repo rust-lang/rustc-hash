@@ -42,7 +42,7 @@ use std::collections::{HashMap, HashSet};
 #[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 
-/// Type alias for a hashmap using the `fx` hash algorithm.
+/// Type alias for a hashset using the `fx` hash algorithm.
 #[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 
