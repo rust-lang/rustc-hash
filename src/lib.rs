@@ -57,6 +57,7 @@ pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 /// out-performs an FNV-based hash within rustc itself -- the collision rate is
 /// similar or slightly worse than FNV, but the speed of the hash function
 /// itself is much higher because it works on up to 8 bytes at a time.
+#[derive(Clone)]
 pub struct FxHasher {
     hash: usize,
 }
