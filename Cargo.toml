@@ -6,7 +6,7 @@ description = "speedy, non-cryptographic hash used in rustc"
 license = "Apache-2.0/MIT"
 readme = "README.md"
 keywords = ["hash", "hasher", "fxhash", "rustc"]
-repository = "https://github.com/rust-lang-nursery/rustc-hash"
+repository = "https://github.com/rust-lang/rustc-hash"
 
 [features]
 std = []
