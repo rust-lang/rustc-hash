@@ -286,4 +286,29 @@ mod tests {
             hash(HashBytes(b"These are some bytes for testing rustc_hash.")) == if B32 { 2345708736 } else { 12390864548135261390 },
         }
     }
+
+    #[test]
+    fn with_seed_actually_different() {
+        let seeds = [
+            [1, 2],
+            [42, 17],
+            [124436707, 99237],
+            [usize::MIN, usize::MAX],
+        ];
+
+        for [a_seed, b_seed] in seeds {
+            let a = || FxHasher::with_seed(a_seed);
+            let b = || FxHasher::with_seed(b_seed);
+
+            for x in u8::MIN..=u8::MAX {
+                let mut a = a();
+                let mut b = b();
+
+                x.hash(&mut a);
+                x.hash(&mut b);
+
+                assert_ne!(a.finish(), b.finish())
+            }
+        }
+    }
 }
