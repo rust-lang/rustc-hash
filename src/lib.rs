@@ -28,6 +28,14 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+#[cfg(feature = "rand")]
+extern crate rand;
+
+#[cfg(feature = "rand")]
+mod random_state;
+
+mod seeded_state;
+
 use core::convert::TryInto;
 use core::default::Default;
 #[cfg(feature = "std")]
@@ -45,6 +53,11 @@ pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 /// Type alias for a hashset using the `fx` hash algorithm.
 #[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
+
+#[cfg(feature = "rand")]
+pub use random_state::{FxHashMapRand, FxHashSetRand, FxRandomState};
+
+pub use seeded_state::{FxHashMapSeed, FxHashSetSeed, FxSeededState};
 
 /// A speedy hash algorithm for use within rustc. The hashmap in liballoc
 /// by default uses SipHash which isn't quite as speedy as we want. In the
@@ -66,6 +79,13 @@ pub struct FxHasher {
 const K: usize = 0x9e3779b9;
 #[cfg(target_pointer_width = "64")]
 const K: usize = 0x517cc1b727220a95;
+
+impl FxHasher {
+    /// Creates `fx` hasher with a given seed.
+    pub fn with_seed(seed: usize) -> FxHasher {
+        FxHasher { hash: seed }
+    }
+}
 
 impl Default for FxHasher {
     #[inline]
@@ -154,7 +174,7 @@ mod tests {
     compile_error!("The test suite only supports 64 bit and 32 bit usize");
 
     use crate::FxHasher;
-    use core::hash::{BuildHasher, BuildHasherDefault, Hash};
+    use core::hash::{BuildHasher, BuildHasherDefault, Hash, Hasher};
 
     macro_rules! test_hash {
         (
@@ -264,6 +284,31 @@ mod tests {
             hash(HashBytes(&[2])) == if B32 { 1013904242 } else { 11743562013128004906 },
             hash(HashBytes(b"uwu")) == if B32 { 3939043750 } else { 16622306935539548858 },
             hash(HashBytes(b"These are some bytes for testing rustc_hash.")) == if B32 { 2345708736 } else { 12390864548135261390 },
+        }
+    }
+
+    #[test]
+    fn with_seed_actually_different() {
+        let seeds = [
+            [1, 2],
+            [42, 17],
+            [124436707, 99237],
+            [usize::MIN, usize::MAX],
+        ];
+
+        for [a_seed, b_seed] in seeds {
+            let a = || FxHasher::with_seed(a_seed);
+            let b = || FxHasher::with_seed(b_seed);
+
+            for x in u8::MIN..=u8::MAX {
+                let mut a = a();
+                let mut b = b();
+
+                x.hash(&mut a);
+                x.hash(&mut b);
+
+                assert_ne!(a.finish(), b.finish())
+            }
         }
     }
 }
