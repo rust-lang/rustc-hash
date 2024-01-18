@@ -123,13 +123,12 @@ impl Hasher for FxHasher {
             hash.add_to_hash(u32::from_ne_bytes(chunk.try_into().unwrap()) as usize);
             bytes = rest;
         }
-        if SIZE > 2 && bytes.len() >= 2 {
-            let (chunk, rest) = bytes.split_at(2);
-            hash.add_to_hash(u16::from_ne_bytes(chunk.try_into().unwrap()) as usize);
-            bytes = rest;
-        }
-        if SIZE > 1 && bytes.len() >= 1 {
-            hash.add_to_hash(bytes[0] as usize);
+        if !bytes.is_empty() {
+            let mut chunk = 0;
+            for &byte in bytes {
+                chunk = chunk << 8 | byte as usize;
+            }
+            hash.add_to_hash(chunk);
         }
 
         *self = hash;
@@ -288,7 +287,7 @@ mod tests {
             hash(HashBytes(&[0, 0, 0, 0, 0, 0])) == 0,
             hash(HashBytes(&[1])) == if B32 { 2654435769 } else { 5871781006564002453 },
             hash(HashBytes(&[2])) == if B32 { 1013904242 } else { 11743562013128004906 },
-            hash(HashBytes(b"uwu")) == if B32 { 3939043750 } else { 16622306935539548858 },
+            hash(HashBytes(b"uwu")) == if B32 { 3128729741 } else { 14178895633054898457 },
             hash(HashBytes(b"These are some bytes for testing rustc_hash.")) == if B32 { 2345708736 } else { 12390864548135261390 },
         }
     }
