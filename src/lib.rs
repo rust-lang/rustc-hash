@@ -84,7 +84,7 @@ const K: usize = 0x517cc1b727220a95;
 fn take_first_chunk<'a, const N: usize>(slice: &mut &'a [u8]) -> Option<&'a [u8; N]> {
     // TODO: use [T]::split_first_chunk() when stable
     if slice.len() < N {
-        return None
+        return None;
     }
 
     let (first, rest) = slice.split_at(N);
@@ -94,15 +94,20 @@ fn take_first_chunk<'a, const N: usize>(slice: &mut &'a [u8]) -> Option<&'a [u8;
 
 impl FxHasher {
     /// Creates `fx` hasher with a given seed.
-    pub fn with_seed(seed: usize) -> FxHasher {
+    pub const fn with_seed(seed: usize) -> FxHasher {
         FxHasher { hash: seed }
+    }
+
+    /// Create a default `fq` hasher.
+    pub const fn default() -> FxHasher {
+        FxHasher { hash: 0 }
     }
 }
 
 impl Default for FxHasher {
     #[inline]
     fn default() -> FxHasher {
-        FxHasher { hash: 0 }
+        Self::default()
     }
 }
 
