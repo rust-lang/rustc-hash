@@ -8,8 +8,8 @@ The [hash map in `std`](https://doc.rust-lang.org/std/collections/struct.HashMap
 These attacks aren't as much of a concern in the compiler so we prefer to use the quicker, non-cryptographic Fx algorithm.
 
 The Fx algorithm is a unique one used by Firefox. It is fast because it can hash eight bytes at a time.
-Within `rustc`, it consistently outperforms FNV-based algorithms.
-The collision rate is similar or slightly worse than FNV.
+Within `rustc`, it consistently outperforms every other tested algorithms (such as FNV).
+The collision rate is similar or slightly worse than others.
 
 ## Usage
 
