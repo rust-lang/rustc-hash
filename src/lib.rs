@@ -1,14 +1,4 @@
-// Copyright 2015 The Rust Project Developers. See the COPYRIGHT
-// file at the top-level directory of this distribution and at
-// http://rust-lang.org/COPYRIGHT.
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
-//! Fast, non-cryptographic hash used by rustc and Firefox.
+//! A speedy, non-cryptographic hashing algorithm used by `rustc` and Firefox.
 //!
 //! # Example
 //!
@@ -16,6 +6,7 @@
 //! # #[cfg(feature = "std")]
 //! # fn main() {
 //! use rustc_hash::FxHashMap;
+//!
 //! let mut map: FxHashMap<u32, u32> = FxHashMap::default();
 //! map.insert(22, 44);
 //! # }
@@ -46,11 +37,11 @@ use core::ops::BitXor;
 #[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
 
-/// Type alias for a hashmap using the `fx` hash algorithm.
+/// Type alias for a hash map that uses the Fx hashing algorithm.
 #[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
 
-/// Type alias for a hashset using the `fx` hash algorithm.
+/// Type alias for a hash set that uses the Fx hashing algorithm.
 #[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
 

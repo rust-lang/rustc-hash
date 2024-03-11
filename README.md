@@ -3,20 +3,18 @@
 [![crates.io](https://img.shields.io/crates/v/rustc-hash.svg)](https://crates.io/crates/rustc-hash)
 [![Documentation](https://docs.rs/rustc-hash/badge.svg)](https://docs.rs/rustc-hash)
 
-A speedy hash algorithm used within rustc. The hashmap in liballoc by
-default uses SipHash which isn't quite as speedy as we want. In the
-compiler we're not really worried about DOS attempts, so we use a fast
-non-cryptographic hash.
+A speedy, non-cryptographic hashing algorithm used by `rustc` and Firefox.
+The [hash map in `std`](https://doc.rust-lang.org/std/collections/struct.HashMap.html) uses SipHash by default, which provides resistance against DOS attacks.
+These attacks aren't as much of a concern in the compiler so we prefer to use the quicker, non-cryptographic Fx algorithm.
 
-This is the same as the algorithm used by Firefox -- which is a
-homespun one not based on any widely-known algorithm -- though
-modified to produce 64-bit hash values instead of 32-bit hash
-values. It consistently out-performs an FNV-based hash within rustc
-itself -- the collision rate is similar or slightly worse than FNV,
-but the speed of the hash function itself is much higher because it
-works on up to 8 bytes at a time.
+The Fx algorithm is a unique one used by Firefox. It is fast because it can hash eight bytes at a time.
+Within `rustc`, it consistently outperforms every other tested algorithm (such as FNV).
+The collision rate is similar or slightly worse than other low-quality hash functions.
 
 ## Usage
+
+This crate provides `FxHashMap` and `FxHashSet` as collections.
+They are simply type aliases for their `std::collection` counterparts using the Fx hasher.
 
 ```rust
 use rustc_hash::FxHashMap;
@@ -27,12 +25,9 @@ map.insert(22, 44);
 
 ### `no_std`
 
-This crate can be used as a `no_std` crate by disabling the `std`
-feature, which is on by default, as follows:
+The `std` feature is on by default to enable collections.
+It can be turned off in `Cargo.toml` like so:
 
 ```toml
 rustc-hash = { version = "1.1", default-features = false }
 ```
-
-In this configuration, `FxHasher` is the only export, and the
-`FxHashMap`/`FxHashSet` type aliases are omitted.
