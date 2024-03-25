@@ -27,7 +27,6 @@ mod random_state;
 
 mod seeded_state;
 
-use core::convert::TryInto;
 use core::default::Default;
 #[cfg(feature = "std")]
 use core::hash::BuildHasherDefault;
@@ -73,14 +72,9 @@ const K: usize = 0x517cc1b727220a95;
 
 #[inline]
 fn take_first_chunk<'a, const N: usize>(slice: &mut &'a [u8]) -> Option<&'a [u8; N]> {
-    // TODO: use [T]::split_first_chunk() when stable
-    if slice.len() < N {
-        return None;
-    }
-
-    let (first, rest) = slice.split_at(N);
+    let (first, rest) = slice.split_first_chunk()?;
     *slice = rest;
-    Some(first.try_into().unwrap())
+    Some(first)
 }
 
 impl FxHasher {
