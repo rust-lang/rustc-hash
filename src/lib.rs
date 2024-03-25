@@ -84,12 +84,12 @@ fn take_first_chunk<'a, const N: usize>(slice: &mut &'a [u8]) -> Option<&'a [u8;
 }
 
 impl FxHasher {
-    /// Creates `fx` hasher with a given seed.
+    /// Creates a `fx` hasher with a given seed.
     pub const fn with_seed(seed: usize) -> FxHasher {
         FxHasher { hash: seed }
     }
 
-    /// Create a default `fq` hasher.
+    /// Creates a default `fx` hasher.
     pub const fn default() -> FxHasher {
         FxHasher { hash: 0 }
     }
