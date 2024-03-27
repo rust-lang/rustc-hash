@@ -116,6 +116,9 @@ impl Hasher for FxHasher {
         const _: () = assert!(size_of::<usize>() <= size_of::<u64>());
         // Ensure no bytes are discarded by casting to usize
         const _: () = assert!(size_of::<u32>() <= size_of::<usize>());
+        // Copy the 1 word sized state to a local variable to ensure it
+        // is kept in a register.
+        // See: https://github.com/rust-lang/rustc-hash/pull/34
         let mut state = self.clone();
         while let Some(&usize_bytes) = take_first_chunk(&mut bytes) {
             state.add_to_hash(usize::from_ne_bytes(usize_bytes));
