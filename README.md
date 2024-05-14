@@ -3,13 +3,22 @@
 [![crates.io](https://img.shields.io/crates/v/rustc-hash.svg)](https://crates.io/crates/rustc-hash)
 [![Documentation](https://docs.rs/rustc-hash/badge.svg)](https://docs.rs/rustc-hash)
 
-A speedy, non-cryptographic hashing algorithm used by `rustc` and Firefox.
+A speedy, non-cryptographic hashing algorithm used by `rustc`.
 The [hash map in `std`](https://doc.rust-lang.org/std/collections/struct.HashMap.html) uses SipHash by default, which provides resistance against DOS attacks.
-These attacks aren't as much of a concern in the compiler so we prefer to use the quicker, non-cryptographic Fx algorithm.
+These attacks aren't as much of a concern in the compiler so we prefer to use a
+quicker, non-cryptographic hash algorithm.
 
-The Fx algorithm is a unique one used by Firefox. It is fast because it can hash eight bytes at a time.
-Within `rustc`, it consistently outperforms every other tested algorithm (such as FNV).
-The collision rate is similar or slightly worse than other low-quality hash functions.
+The original hash algorithm provided by this crate was one taken from Firefox,
+hence the hasher it provides is called FxHasher. This name is kept for backwards
+compatibility, but the underlying hash has since been replaced. The current
+design for the hasher is a polynomial hash finished with a single bit rotation,
+together with a wyhash-inspired compression function for strings/slices, both
+designed by Orson Peters.
+
+Within `rustc`, it consistently outperforms every other tested algorithm or
+variation, despite its simplicity. Spending more CPU cycles on a higher quality
+hash does not reduce hash collisions enough to be worth the cost on real-world
+benchmarks.
 
 ## Usage
 

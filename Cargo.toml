@@ -12,6 +12,7 @@ edition = "2018"
 [features]
 default = ["std"]
 std = []
+nightly = []
 rand = ["dep:rand", "std"]
 
 [dependencies]
