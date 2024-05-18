@@ -146,7 +146,7 @@ impl Hasher for FxHasher {
 
     #[cfg(feature = "nightly")]
     #[inline]
-    fn write_length_prefix(&mut self, len: usize) {
+    fn write_length_prefix(&mut self, _len: usize) {
         // Most cases will specialize hash_slice anyway which calls write(),
         // which encodes the length already.
     }
