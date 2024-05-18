@@ -104,6 +104,7 @@ impl FxHasher {
 impl Hasher for FxHasher {
     #[inline]
     fn write(&mut self, bytes: &[u8]) {
+        // Compress the byte string to a single u64 and add to our hash.
         self.write_u64(hash_bytes(bytes));
     }
 
@@ -147,14 +148,19 @@ impl Hasher for FxHasher {
     #[cfg(feature = "nightly")]
     #[inline]
     fn write_length_prefix(&mut self, _len: usize) {
-        // Most cases will specialize hash_slice anyway which calls write(),
-        // which encodes the length already.
+        // Most cases will specialize hash_slice to call write(), which encodes
+        // the length already in a more efficient manner than we could here. For
+        // HashDoS-resistance you would still need to include this for the
+        // non-slice collection hashes, but for the purposes of rustc we do not
+        // care and do not wish to pay the performance penalty of mixing in len
+        // for those collections.
     }
 
     #[cfg(feature = "nightly")]
     #[inline]
     fn write_str(&mut self, s: &str) {
-        // We don't need anything special here.
+        // Similarly here, write already encodes the length, so nothing special
+        // is needed.
         self.write(s.as_bytes())
     }
 
