@@ -5,8 +5,8 @@
 
 A speedy, non-cryptographic hashing algorithm used by `rustc`.
 The [hash map in `std`](https://doc.rust-lang.org/std/collections/struct.HashMap.html) uses SipHash by default, which provides resistance against DOS attacks.
-These attacks aren't as much of a concern in the compiler so we prefer to use a
-quicker, non-cryptographic hash algorithm.
+These attacks aren't a concern in the compiler so we prefer to use a quicker,
+non-cryptographic hash algorithm.
 
 The original hash algorithm provided by this crate was one taken from Firefox,
 hence the hasher it provides is called FxHasher. This name is kept for backwards
@@ -15,10 +15,10 @@ design for the hasher is a polynomial hash finished with a single bit rotation,
 together with a wyhash-inspired compression function for strings/slices, both
 designed by Orson Peters.
 
-Within `rustc`, it consistently outperforms every other tested algorithm or
-variation, despite its simplicity. Spending more CPU cycles on a higher quality
-hash does not reduce hash collisions enough to be worth the cost on real-world
-benchmarks.
+For `rustc` we have tried many different hashing algorithms. Hashing speed is
+critical, especially for single integers. Spending more CPU cycles on a higher
+quality hash does not reduce hash collisions enough to make the compiler faster
+on real-world benchmarks.
 
 ## Usage
 
