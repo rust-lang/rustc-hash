@@ -29,9 +29,7 @@ mod seeded_state;
 
 use core::convert::TryInto;
 use core::default::Default;
-#[cfg(feature = "std")]
-use core::hash::BuildHasherDefault;
-use core::hash::Hasher;
+use core::hash::{BuildHasher, Hasher};
 use core::mem::size_of;
 use core::ops::BitXor;
 #[cfg(feature = "std")]
@@ -39,11 +37,11 @@ use std::collections::{HashMap, HashSet};
 
 /// Type alias for a hash map that uses the Fx hashing algorithm.
 #[cfg(feature = "std")]
-pub type FxHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FxHasher>>;
+pub type FxHashMap<K, V> = HashMap<K, V, FxBuildHasher>;
 
 /// Type alias for a hash set that uses the Fx hashing algorithm.
 #[cfg(feature = "std")]
-pub type FxHashSet<V> = HashSet<V, BuildHasherDefault<FxHasher>>;
+pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 
 #[cfg(feature = "rand")]
 pub use random_state::{FxHashMapRand, FxHashSetRand, FxRandomState};
@@ -141,13 +139,30 @@ impl Hasher for FxHasher {
     }
 }
 
+/// An implementation of [`BuildHasher`] that produces [`FxHasher`]s.
+///
+/// ```
+/// use std::hash::BuildHasher;
+/// use rustc_hash::FxBuildHasher;
+/// assert_ne!(FxBuildHasher.hash_one(1), FxBuildHasher.hash_one(2));
+/// ```
+#[derive(Copy, Clone, Default)]
+pub struct FxBuildHasher;
+
+impl BuildHasher for FxBuildHasher {
+    type Hasher = FxHasher;
+    fn build_hasher(&self) -> FxHasher {
+        FxHasher::default()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[cfg(not(any(target_pointer_width = "64", target_pointer_width = "32")))]
     compile_error!("The test suite only supports 64 bit and 32 bit usize");
 
-    use crate::FxHasher;
-    use core::hash::{BuildHasher, BuildHasherDefault, Hash, Hasher};
+    use crate::{FxBuildHasher, FxHasher};
+    use core::hash::{BuildHasher, Hash, Hasher};
 
     macro_rules! test_hash {
         (
@@ -156,7 +171,7 @@ mod tests {
             )*
         ) => {
             $(
-                assert_eq!(BuildHasherDefault::<FxHasher>::default().hash_one($value), $result);
+                assert_eq!(FxBuildHasher.hash_one($value), $result);
             )*
         };
     }
