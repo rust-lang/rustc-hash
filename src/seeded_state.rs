@@ -1,15 +1,12 @@
-#[cfg(feature = "std")]
-use std::collections::{HashMap, HashSet};
-
 use crate::FxHasher;
 
 /// Type alias for a hashmap using the `fx` hash algorithm with [`FxSeededState`].
 #[cfg(feature = "std")]
-pub type FxHashMapSeed<K, V> = HashMap<K, V, FxSeededState>;
+pub type FxHashMapSeed<K, V> = std::collections::HashMap<K, V, FxSeededState>;
 
 /// Type alias for a hashmap using the `fx` hash algorithm with [`FxSeededState`].
 #[cfg(feature = "std")]
-pub type FxHashSetSeed<V> = HashSet<V, FxSeededState>;
+pub type FxHashSetSeed<V> = std::collections::HashSet<V, FxSeededState>;
 
 /// [`FxSetState`] is an alternative state for `HashMap` types, allowing to use [`FxHasher`] with a set seed.
 ///
