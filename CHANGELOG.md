@@ -1,4 +1,4 @@
-## 1.3.0
+## 2.0.0
 
 - Replace hash with faster and better finalized hash.
   This replaces the previous "fxhash" algorithm originating in Firefox
