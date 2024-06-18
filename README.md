@@ -38,5 +38,5 @@ The `std` feature is on by default to enable collections.
 It can be turned off in `Cargo.toml` like so:
 
 ```toml
-rustc-hash = { version = "1.3", default-features = false }
+rustc-hash = { version = "2.0", default-features = false }
 ```
