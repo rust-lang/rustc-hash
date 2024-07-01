@@ -4,7 +4,7 @@
   This replaces the previous "fxhash" algorithm originating in Firefox
   with a custom hasher designed and implemented by Orson Peters ([`@orlp`](https://github.com/orlp)).
   It was measured to have slightly better performance for rustc, has better theoretical properties
-  and also includes a signficantly better string hasher.
+  and also includes a significantly better string hasher.
 - Fix `no_std` builds
 
 ## 1.2.0 (**YANKED**)

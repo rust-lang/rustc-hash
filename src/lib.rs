@@ -65,7 +65,7 @@ pub struct FxHasher {
 // as a multilinear hash with keystream k[..]
 //    m[0] * k[0] + m[1] * k[1] + m[2] * k[2] + ...
 // where keystream k just happens to be generated using a multiplicative
-// congrential pseudorandom number generator (MCG). For that reason we chose a
+// congruential pseudorandom number generator (MCG). For that reason we chose a
 // constant that was found to be good for a MCG in:
 //     "Computationally Easy, Spectrally Good Multipliers for Congruential
 //     Pseudorandom Number Generators" by Guy Steele and Sebastiano Vigna.
