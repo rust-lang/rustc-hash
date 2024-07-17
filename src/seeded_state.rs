@@ -8,7 +8,7 @@ pub type FxHashMapSeed<K, V> = std::collections::HashMap<K, V, FxSeededState>;
 #[cfg(feature = "std")]
 pub type FxHashSetSeed<V> = std::collections::HashSet<V, FxSeededState>;
 
-/// [`FxSetState`] is an alternative state for `HashMap` types, allowing to use [`FxHasher`] with a set seed.
+/// [`FxSeededState`] is an alternative state for `HashMap` types, allowing to use [`FxHasher`] with a set seed.
 ///
 /// ```
 /// # use std::collections::HashMap;
