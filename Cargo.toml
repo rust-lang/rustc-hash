@@ -14,6 +14,7 @@ default = ["std"]
 std = []
 nightly = []
 rand = ["dep:rand", "std"]
+std_bench = ["nightly"]
 
 [dependencies]
 rand = { version = "0.8", optional = true }

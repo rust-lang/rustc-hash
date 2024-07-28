@@ -70,4 +70,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup update stable && rustup default stable
       - run: rustup component add clippy
-      - run: cargo clippy --workspace --all-targets --no-deps
+      - run: cargo clippy --lib --bins --tests --examples --no-deps
