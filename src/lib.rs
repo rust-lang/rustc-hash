@@ -76,19 +76,19 @@ const K: usize = 0x93d765dd;
 
 impl FxHasher {
     /// Creates a `fx` hasher with a given seed.
-    pub const fn with_seed(seed: usize) -> FxHasher {
-        FxHasher { hash: seed }
+    pub const fn with_seed(seed: usize) -> Self {
+        Self { hash: seed }
     }
 
     /// Creates a default `fx` hasher.
-    pub const fn default() -> FxHasher {
-        FxHasher { hash: 0 }
+    pub const fn default() -> Self {
+        Self { hash: 0 }
     }
 }
 
 impl Default for FxHasher {
     #[inline]
-    fn default() -> FxHasher {
+    fn default() -> Self {
         Self::default()
     }
 }

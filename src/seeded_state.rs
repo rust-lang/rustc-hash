@@ -24,7 +24,7 @@ pub struct FxSeededState {
 
 impl FxSeededState {
     /// Constructs a new `FxSeededState` that is initialized with a `seed`.
-    pub const fn with_seed(seed: usize) -> FxSeededState {
+    pub const fn with_seed(seed: usize) -> Self {
         Self { seed }
     }
 }
