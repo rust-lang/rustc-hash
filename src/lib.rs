@@ -201,7 +201,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
     {
         // We compute the full u64 x u64 -> u128 product, this is a single mul
         // instruction on x86-64, one mul plus one mulhi on ARM64.
-        let full = (x as u128) * (y as u128);
+        let full = u128::from(x) * u128::from(y);
         let lo = full as u64;
         let hi = (full >> 64) as u64;
 
@@ -260,14 +260,14 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
             s0 ^= u64::from_le_bytes(bytes[0..8].try_into().unwrap());
             s1 ^= u64::from_le_bytes(bytes[len - 8..].try_into().unwrap());
         } else if len >= 4 {
-            s0 ^= u32::from_le_bytes(bytes[0..4].try_into().unwrap()) as u64;
-            s1 ^= u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()) as u64;
+            s0 ^= u64::from(u32::from_le_bytes(bytes[0..4].try_into().unwrap()));
+            s1 ^= u64::from(u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()));
         } else if len > 0 {
             let lo = bytes[0];
             let mid = bytes[len / 2];
             let hi = bytes[len - 1];
-            s0 ^= lo as u64;
-            s1 ^= ((hi as u64) << 8) | mid as u64;
+            s0 ^= u64::from(lo);
+            s1 ^= (u64::from(hi) << 8) | u64::from(mid);
         }
     } else {
         // Handle bulk (can partially overlap with suffix).
