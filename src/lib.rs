@@ -1,3 +1,11 @@
+#![allow(
+    clippy::unreadable_literal,
+    clippy::must_use_candidate,
+    clippy::module_name_repetitions,
+    clippy::doc_markdown,
+    clippy::cast_possible_truncation
+)]
+
 //! A speedy, non-cryptographic hashing algorithm used by `rustc`.
 //!
 //! # Example
