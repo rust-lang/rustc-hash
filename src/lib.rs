@@ -243,7 +243,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
 /// The 64-bit version of this hash passes the SMHasher3 test suite on the full
 /// 64-bit output, that is, f(hash_bytes(b) ^ f(seed)) for some good avalanching
 /// permutation f() passed all tests with zero failures. When using the 32-bit
-/// version of multiply_mix this hash has a few non-catastrophic failures where
+/// version of `multiply_mix` this hash has a few non-catastrophic failures where
 /// there are a handful more collisions than an optimal hash would give.
 ///
 /// We don't bother avalanching here as we'll feed this hash into a
