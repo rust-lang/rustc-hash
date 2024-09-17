@@ -1,5 +1,5 @@
 #![warn(clippy::all, clippy::pedantic, clippy::cargo)]
-#![allow(
+#![expect(
     clippy::unreadable_literal,
     clippy::must_use_candidate,
     clippy::module_name_repetitions,
