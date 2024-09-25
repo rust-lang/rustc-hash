@@ -13,6 +13,7 @@ pub type FxHashSetRand<V> = HashSet<V, FxRandomState>;
 /// A particular instance `FxRandomState` will create the same instances of
 /// [`Hasher`], but the hashers created by two different `FxRandomState`
 /// instances are unlikely to produce the same result for the same values.
+#[derive(Clone)]
 pub struct FxRandomState {
     seed: usize,
 }
@@ -61,6 +62,15 @@ mod tests {
     use std::thread;
 
     use crate::FxHashMapRand;
+
+    #[test]
+    fn cloned_random_states_are_equal() {
+        // The standard library's `RandomState` derives `Clone` without updating the seed.
+        let a = FxHashMapRand::<&str, u32>::default();
+        let b = a.clone();
+
+        assert_eq!(a.hasher().seed, b.hasher().seed);
+    }
 
     #[test]
     fn random_states_are_different() {
