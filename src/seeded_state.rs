@@ -18,6 +18,7 @@ pub type FxHashSetSeed<V> = std::collections::HashSet<V, FxSeededState>;
 /// map.insert(15, 610);
 /// assert_eq!(map[&15], 610);
 /// ```
+#[derive(Clone)]
 pub struct FxSeededState {
     seed: usize,
 }
@@ -42,6 +43,18 @@ mod tests {
     use core::hash::BuildHasher;
 
     use crate::FxSeededState;
+
+    #[test]
+    fn cloned_seeded_states_are_equal() {
+        let seed = 2;
+        let a = FxSeededState::with_seed(seed);
+        let b = a.clone();
+
+        assert_eq!(a.seed, b.seed);
+        assert_eq!(a.seed, seed);
+
+        assert_eq!(a.build_hasher().hash, b.build_hasher().hash);
+    }
 
     #[test]
     fn same_seed_produces_same_hasher() {

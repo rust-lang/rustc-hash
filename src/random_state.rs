@@ -65,7 +65,6 @@ mod tests {
 
     #[test]
     fn cloned_random_states_are_equal() {
-        // The standard library's `RandomState` derives `Clone` without updating the seed.
         let a = FxHashMapRand::<&str, u32>::default();
         let b = a.clone();
 
