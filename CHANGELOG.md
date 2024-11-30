@@ -1,3 +1,9 @@
+## 2.1.0
+
+- Implement `Clone` for `FxRandomState`
+- Implement `Clone` for `FxSeededState`
+- Use SPDX license expression in license field
+
 ## 2.0.0
 
 - Replace hash with faster and better finalized hash.
