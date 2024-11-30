@@ -1,3 +1,12 @@
+#![warn(clippy::all, clippy::pedantic, clippy::cargo)]
+#![expect(
+    clippy::unreadable_literal,
+    clippy::must_use_candidate,
+    clippy::module_name_repetitions,
+    clippy::doc_markdown,
+    clippy::cast_possible_truncation
+)]
+
 //! A speedy, non-cryptographic hashing algorithm used by `rustc`.
 //!
 //! # Example
@@ -48,10 +57,10 @@ pub use seeded_state::FxSeededState;
 #[cfg(feature = "std")]
 pub use seeded_state::{FxHashMapSeed, FxHashSetSeed};
 
-/// A speedy hash algorithm for use within rustc. The hashmap in liballoc
-/// by default uses SipHash which isn't quite as speedy as we want. In the
-/// compiler we're not really worried about DOS attempts, so we use a fast
-/// non-cryptographic hash.
+/// A speedy hash algorithm for use within rustc.
+///
+/// The hashmap in liballoc by default uses SipHash which isn't quite as speedy as we want.
+/// In the compiler we're not really worried about DOS attempts, so we use a fast non-cryptographic hash.
 ///
 /// The current implementation is a fast polynomial hash with a single
 /// bit rotation as a finishing step designed by Orson Peters.
@@ -76,19 +85,19 @@ const K: usize = 0x93d765dd;
 
 impl FxHasher {
     /// Creates a `fx` hasher with a given seed.
-    pub const fn with_seed(seed: usize) -> FxHasher {
-        FxHasher { hash: seed }
+    pub const fn with_seed(seed: usize) -> Self {
+        Self { hash: seed }
     }
 
     /// Creates a default `fx` hasher.
-    pub const fn default() -> FxHasher {
-        FxHasher { hash: 0 }
+    pub const fn default() -> Self {
+        Self { hash: 0 }
     }
 }
 
 impl Default for FxHasher {
     #[inline]
-    fn default() -> FxHasher {
+    fn default() -> Self {
         Self::default()
     }
 }
@@ -201,7 +210,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
     {
         // We compute the full u64 x u64 -> u128 product, this is a single mul
         // instruction on x86-64, one mul plus one mulhi on ARM64.
-        let full = (x as u128) * (y as u128);
+        let full = u128::from(x) * u128::from(y);
         let lo = full as u64;
         let hi = (full >> 64) as u64;
 
@@ -243,7 +252,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
 /// The 64-bit version of this hash passes the SMHasher3 test suite on the full
 /// 64-bit output, that is, f(hash_bytes(b) ^ f(seed)) for some good avalanching
 /// permutation f() passed all tests with zero failures. When using the 32-bit
-/// version of multiply_mix this hash has a few non-catastrophic failures where
+/// version of `multiply_mix` this hash has a few non-catastrophic failures where
 /// there are a handful more collisions than an optimal hash would give.
 ///
 /// We don't bother avalanching here as we'll feed this hash into a
@@ -260,14 +269,14 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
             s0 ^= u64::from_le_bytes(bytes[0..8].try_into().unwrap());
             s1 ^= u64::from_le_bytes(bytes[len - 8..].try_into().unwrap());
         } else if len >= 4 {
-            s0 ^= u32::from_le_bytes(bytes[0..4].try_into().unwrap()) as u64;
-            s1 ^= u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()) as u64;
+            s0 ^= u64::from(u32::from_le_bytes(bytes[0..4].try_into().unwrap()));
+            s1 ^= u64::from(u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()));
         } else if len > 0 {
             let lo = bytes[0];
             let mid = bytes[len / 2];
             let hi = bytes[len - 1];
-            s0 ^= lo as u64;
-            s1 ^= ((hi as u64) << 8) | mid as u64;
+            s0 ^= u64::from(lo);
+            s1 ^= (u64::from(hi) << 8) | u64::from(mid);
         }
     } else {
         // Handle bulk (can partially overlap with suffix).
