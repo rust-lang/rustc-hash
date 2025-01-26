@@ -96,7 +96,7 @@ impl Default for FxHasher {
 impl FxHasher {
     #[inline]
     fn add_to_hash(&mut self, i: usize) {
-        self.hash = self.hash.wrapping_add(i).wrapping_mul(K);
+        self.hash = self.hash.wrapping_mul(K).wrapping_add(i);
     }
 }
 
@@ -165,28 +165,27 @@ impl Hasher for FxHasher {
 
     #[inline]
     fn finish(&self) -> u64 {
-        // Since we used a multiplicative hash our top bits have the most
-        // entropy (with the top bit having the most, decreasing as you go).
-        // As most hash table implementations (including hashbrown) compute
-        // the bucket index from the bottom bits we want to move bits from the
-        // top to the bottom. Ideally we'd rotate left by exactly the hash table
-        // size, but as we don't know this we'll choose 20 bits, giving decent
-        // entropy up until 2^20 table sizes. On 32-bit hosts we'll dial it
-        // back down a bit to 15 bits.
-
+        // If input entropy is only found in the upper bits we want to spread
+        // it across the bits, which we do using a folded multiply.
+        //
+        // Using K as the multiplier for the folded multiply here isn't fully
+        // justified, there are probably better constants but we'd like to avoid
+        // loading another constant and it seems good enough.
+        //
+        // We don't use multiply_mix here as on 32-bit our input consists of two
+        // 32-bit numbers and multiply-mix does extra steps to mix what it
+        // thinks is a full 2x64-bit input.
         #[cfg(target_pointer_width = "64")]
-        const ROTATE: u32 = 20;
+        {
+            let full = (self.hash as u128).wrapping_mul(K as u128);
+            (full as u64) ^ (full >> 64) as u64
+        }
+
         #[cfg(target_pointer_width = "32")]
-        const ROTATE: u32 = 15;
-
-        self.hash.rotate_left(ROTATE) as u64
-
-        // A bit reversal would be even better, except hashbrown also expects
-        // good entropy in the top 7 bits and a bit reverse would fill those
-        // bits with low entropy. More importantly, bit reversals are very slow
-        // on x86-64. A byte reversal is relatively fast, but still has a 2
-        // cycle latency on x86-64 compared to the 1 cycle latency of a rotate.
-        // It also suffers from the hashbrown-top-7-bit-issue.
+        {
+            let full = (self.hash as u64).wrapping_mul(K as u64);
+            full ^ (full >> 32)
+        }
     }
 }
 
