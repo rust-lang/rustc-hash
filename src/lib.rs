@@ -170,12 +170,12 @@ impl Hasher for FxHasher {
         // As most hash table implementations (including hashbrown) compute
         // the bucket index from the bottom bits we want to move bits from the
         // top to the bottom. Ideally we'd rotate left by exactly the hash table
-        // size, but as we don't know this we'll choose 20 bits, giving decent
-        // entropy up until 2^20 table sizes. On 32-bit hosts we'll dial it
+        // size, but as we don't know this we'll choose 26 bits, giving decent
+        // entropy up until 2^26 table sizes. On 32-bit hosts we'll dial it
         // back down a bit to 15 bits.
 
         #[cfg(target_pointer_width = "64")]
-        const ROTATE: u32 = 20;
+        const ROTATE: u32 = 26;
         #[cfg(target_pointer_width = "32")]
         const ROTATE: u32 = 15;
 
@@ -339,75 +339,75 @@ mod tests {
     fn unsigned() {
         test_hash! {
             hash(0_u8) == 0,
-            hash(1_u8) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_u8) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(u8::MAX) == if B32 { 999399879 } else { 17600987023830959190 },
+            hash(1_u8) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_u8) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(u8::MAX) == if B32 { 999399879 } else { 1211781028898739645 },
 
             hash(0_u16) == 0,
-            hash(1_u16) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_u16) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(u16::MAX) == if B32 { 3440503042 } else { 4001367065645062987 },
+            hash(1_u16) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_u16) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(u16::MAX) == if B32 { 3440503042 } else { 16279819243059860173 },
 
             hash(0_u32) == 0,
-            hash(1_u32) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_u32) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(u32::MAX) == if B32 { 1293006356 } else { 17126373362251322066 },
+            hash(1_u32) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_u32) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(u32::MAX) == if B32 { 1293006356 } else { 7729994835221066939 },
 
             hash(0_u64) == 0,
-            hash(1_u64) == if B32 { 275023839 } else { 12583873379513078615 },
-            hash(100_u64) == if B32 { 1732383522 } else { 4008740938959785536 },
-            hash(u64::MAX) == if B32 { 1017982517 } else { 5862870694197521576 },
+            hash(1_u64) == if B32 { 275023839 } else { 12157901119326311915 },
+            hash(100_u64) == if B32 { 1732383522 } else { 16751747135202103309 },
+            hash(u64::MAX) == if B32 { 1017982517 } else { 6288842954450348564 },
 
             hash(0_u128) == 0,
-            hash(1_u128) == if B32 { 1860738631 } else { 12885773367358079611 },
-            hash(100_u128) == if B32 { 1389515751 } else { 15751995649841559633 },
-            hash(u128::MAX) == if B32 { 2156022013 } else { 11423841400550042156 },
+            hash(1_u128) == if B32 { 1860738631 } else { 13032756267696824044 },
+            hash(100_u128) == if B32 { 1389515751 } else { 12003541609544029302 },
+            hash(u128::MAX) == if B32 { 2156022013 } else { 11702830760530184999 },
 
             hash(0_usize) == 0,
-            hash(1_usize) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_usize) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(usize::MAX) == if B32 { 1293006356 } else { 5862870694197521576 },
+            hash(1_usize) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_usize) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(usize::MAX) == if B32 { 1293006356 } else { 6288842954450348564 },
         }
     }
 
     #[test]
     fn signed() {
         test_hash! {
-            hash(i8::MIN) == if B32 { 2000713177 } else { 5869058164817243095 },
+            hash(i8::MIN) == if B32 { 2000713177 } else { 6684841074112525780 },
             hash(0_i8) == 0,
-            hash(1_i8) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_i8) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(i8::MAX) == if B32 { 3293686765 } else { 11731928859014764671 },
+            hash(1_i8) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_i8) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(i8::MAX) == if B32 { 3293686765 } else { 12973684028562874344 },
 
-            hash(i16::MIN) == if B32 { 1073764727 } else { 8292620222579070801 },
+            hash(i16::MIN) == if B32 { 1073764727 } else { 14218860181193086044 },
             hash(0_i16) == 0,
-            hash(1_i16) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_i16) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(i16::MAX) == if B32 { 2366738315 } else { 14155490916776592377 },
+            hash(1_i16) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_i16) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(i16::MAX) == if B32 { 2366738315 } else { 2060959061933882993 },
 
-            hash(i32::MIN) == if B32 { 16384 } else { 5631751334026900245 },
+            hash(i32::MIN) == if B32 { 16384 } else { 9943947977240134995 },
             hash(0_i32) == 0,
-            hash(1_i32) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_i32) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(i32::MAX) == if B32 { 1293022740 } else { 11494622028224421821 },
+            hash(1_i32) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_i32) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(i32::MAX) == if B32 { 1293022740 } else { 16232790931690483559 },
 
-            hash(i64::MIN) == if B32 { 16384 } else { 524288 },
+            hash(i64::MIN) == if B32 { 16384 } else { 33554432 },
             hash(0_i64) == 0,
-            hash(1_i64) == if B32 { 275023839 } else { 12583873379513078615 },
-            hash(100_i64) == if B32 { 1732383522 } else { 4008740938959785536 },
-            hash(i64::MAX) == if B32 { 1017998901 } else { 5862870694198045864 },
+            hash(1_i64) == if B32 { 275023839 } else { 12157901119326311915 },
+            hash(100_i64) == if B32 { 1732383522 } else { 16751747135202103309 },
+            hash(i64::MAX) == if B32 { 1017998901 } else { 6288842954483902996 },
 
-            hash(i128::MIN) == if B32 { 16384 } else { 524288 },
+            hash(i128::MIN) == if B32 { 16384 } else { 33554432 },
             hash(0_i128) == 0,
-            hash(1_i128) == if B32 { 1860738631 } else { 12885773367358079611 },
-            hash(100_i128) == if B32 { 1389515751 } else { 15751995649841559633 },
-            hash(i128::MAX) == if B32 { 2156005629 } else { 11423841400549517868 },
+            hash(1_i128) == if B32 { 1860738631 } else { 13032756267696824044 },
+            hash(100_i128) == if B32 { 1389515751 } else { 12003541609544029302 },
+            hash(i128::MAX) == if B32 { 2156005629 } else { 11702830760496630567 },
 
-            hash(isize::MIN) == if B32 { 16384 } else { 524288 },
+            hash(isize::MIN) == if B32 { 16384 } else { 33554432 },
             hash(0_isize) == 0,
-            hash(1_isize) == if B32 { 3001993707 } else { 12583873379513078615 },
-            hash(100_isize) == if B32 { 3844759569 } else { 4008740938959785536 },
-            hash(isize::MAX) == if B32 { 1293022740 } else { 5862870694198045864 },
+            hash(1_isize) == if B32 { 3001993707 } else { 12157901119326311915 },
+            hash(100_isize) == if B32 { 3844759569 } else { 16751747135202103309 },
+            hash(isize::MAX) == if B32 { 1293022740 } else { 6288842954483902996 },
         }
     }
 
@@ -422,13 +422,13 @@ mod tests {
     #[test]
     fn bytes() {
         test_hash! {
-            hash(HashBytes(&[])) == if B32 { 2673204745 } else { 5175017818631658678 },
-            hash(HashBytes(&[0])) == if B32 { 2948228584 } else { 11037888512829180254 },
-            hash(HashBytes(&[0, 0, 0, 0, 0, 0])) == if B32 { 3223252423 } else { 6891281800865632452 },
-            hash(HashBytes(&[1])) == if B32 { 2943445104 } else { 4127763515449136980 },
-            hash(HashBytes(&[2])) == if B32 { 1055423297 } else { 11322700005987241762 },
-            hash(HashBytes(b"uwu")) == if B32 { 2699662140 } else { 2129615206728903013 },
-            hash(HashBytes(b"These are some bytes for testing rustc_hash.")) == if B32 { 2303640537 } else { 5513083560975408889 },
+            hash(HashBytes(&[])) == if B32 { 2673204745 } else { 17606491139363777937 },
+            hash(HashBytes(&[0])) == if B32 { 2948228584 } else { 5448590020104574886 },
+            hash(HashBytes(&[0, 0, 0, 0, 0, 0])) == if B32 { 3223252423 } else { 16766921560080789783 },
+            hash(HashBytes(&[1])) == if B32 { 2943445104 } else { 5922447956811044110 },
+            hash(HashBytes(&[2])) == if B32 { 1055423297 } else { 5229781508510959783 },
+            hash(HashBytes(b"uwu")) == if B32 { 2699662140 } else { 7168164714682931527 },
+            hash(HashBytes(b"These are some bytes for testing rustc_hash.")) == if B32 { 2303640537 } else { 2349210501944688211 },
         }
     }
 
