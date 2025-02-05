@@ -1,3 +1,10 @@
+# 2.1.1
+
+- Change the internal algorithm to better accomodate large hashmaps.
+  This mitigates a [regression with 2.0 in rustc](https://github.com/rust-lang/rust/issues/135477).
+  See [PR#55](https://github.com/rust-lang/rustc-hash/pull/55) for more details on the change (this PR was not merged).
+  This problem might be improved with changes to hashbrown in the future.
+
 ## 2.1.0
 
 - Implement `Clone` for `FxRandomState`
