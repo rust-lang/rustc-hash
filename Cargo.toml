@@ -6,6 +6,7 @@ description = "A speedy, non-cryptographic hashing algorithm used by rustc"
 license = "Apache-2.0 OR MIT"
 readme = "README.md"
 keywords = ["hash", "hasher", "fxhash", "rustc"]
+categories = ["algorithms"]
 repository = "https://github.com/rust-lang/rustc-hash"
 edition = "2021"
 
