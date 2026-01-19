@@ -15,7 +15,11 @@
 //! ```
 
 #![no_std]
+#![cfg_attr(feature = "nightly", feature(const_default))]
+#![cfg_attr(feature = "nightly", feature(const_trait_impl))]
+#![cfg_attr(feature = "nightly", feature(derive_const))]
 #![cfg_attr(feature = "nightly", feature(hasher_prefixfree_extras))]
+#![allow(rustc::default_hash_types)]
 
 #[cfg(feature = "std")]
 extern crate std;
@@ -86,12 +90,33 @@ impl FxHasher {
     }
 }
 
-impl Default for FxHasher {
-    #[inline]
-    fn default() -> FxHasher {
-        Self::default()
-    }
+#[cfg(not(feature = "nightly"))]
+macro_rules! default_impl {
+    () => {
+        impl Default for FxHasher {
+            #[inline]
+            fn default() -> FxHasher {
+                Self::default()
+            }
+        }
+    };
 }
+
+// In order to use the nightly-only `const` syntax, we gate the definition behind a macro so that
+// parsing still succeeds on stable.
+#[cfg(feature = "nightly")]
+macro_rules! default_impl {
+    () => {
+        impl const Default for FxHasher {
+            #[inline]
+            fn default() -> FxHasher {
+                Self::default()
+            }
+        }
+    };
+}
+
+default_impl!();
 
 impl FxHasher {
     #[inline]
@@ -315,7 +340,9 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
 /// use rustc_hash::FxBuildHasher;
 /// assert_ne!(FxBuildHasher.hash_one(1), FxBuildHasher.hash_one(2));
 /// ```
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone)]
+#[cfg_attr(not(feature = "nightly"), derive(Default))]
+#[cfg_attr(feature = "nightly", derive_const(Default))]
 pub struct FxBuildHasher;
 
 impl BuildHasher for FxBuildHasher {
