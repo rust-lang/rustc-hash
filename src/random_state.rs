@@ -32,7 +32,7 @@ impl FxRandomState {
         // 2. Change the cached result on every creation, so maps created
         //    on the same thread don't have the same iteration order
         thread_local!(static SEED: Cell<usize> = {
-            Cell::new(rand::thread_rng().gen())
+            Cell::new(rand::rng().random_range(..=usize::MAX))
         });
 
         SEED.with(|seed| {
