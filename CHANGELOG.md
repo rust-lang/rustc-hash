@@ -1,3 +1,7 @@
+# 2.1.2
+
+- [Refactor byte hashing to remove unreachable panic](https://github.com/rust-lang/rustc-hash/pull/65)
+
 # 2.1.1
 
 - Change the internal algorithm to better accomodate large hashmaps.
