@@ -308,7 +308,7 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
         }
     } else {
         // Handle bulk (can partially overlap with suffix).
-        let mut bulk = &bytes[0..(len - 1)];
+        let mut bulk = &bytes[..(len - 1)];
         while let Some((chunk, rest)) = bulk.split_first_chunk::<16>() {
             let x = u64::from_le_bytes((&chunk[..8]).try_into().unwrap());
             let y = u64::from_le_bytes((&chunk[8..]).try_into().unwrap());
