@@ -308,10 +308,10 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
         }
     } else {
         // Handle bulk (can partially overlap with suffix).
-        let mut off = 0;
-        while off < len - 16 {
-            let x = u64::from_le_bytes(bytes[off..off + 8].try_into().unwrap());
-            let y = u64::from_le_bytes(bytes[off + 8..off + 16].try_into().unwrap());
+        let mut bulk = &bytes[..(len - 1)];
+        while let Some((chunk, rest)) = bulk.split_first_chunk::<16>() {
+            let x = u64::from_le_bytes((&chunk[..8]).try_into().unwrap());
+            let y = u64::from_le_bytes((&chunk[8..]).try_into().unwrap());
 
             // Replace s1 with a mix of s0, x, and y, and s0 with s1.
             // This ensures the compiler can unroll this loop into two
@@ -322,7 +322,7 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
             let t = multiply_mix(s0 ^ x, PREVENT_TRIVIAL_ZERO_COLLAPSE ^ y);
             s0 = s1;
             s1 = t;
-            off += 16;
+            bulk = rest;
         }
 
         let suffix = &bytes[len - 16..];
