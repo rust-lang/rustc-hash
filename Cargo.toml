@@ -17,4 +17,4 @@ nightly = []
 rand = ["dep:rand", "std"]
 
 [dependencies]
-rand = { version = "0.8", optional = true }
+rand = { version = "0.9", optional = true }
