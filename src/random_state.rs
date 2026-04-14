@@ -20,7 +20,7 @@ pub struct FxRandomState {
 
 impl FxRandomState {
     /// Constructs a new `FxRandomState` that is initialized with random seed.
-    pub fn new() -> FxRandomState {
+    pub fn new() -> Self {
         use rand::Rng;
         use std::{cell::Cell, thread_local};
 
@@ -38,7 +38,7 @@ impl FxRandomState {
         SEED.with(|seed| {
             let s = seed.get();
             seed.set(s.wrapping_add(1));
-            FxRandomState { seed: s }
+            Self { seed: s }
         })
     }
 }
