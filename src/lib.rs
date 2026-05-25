@@ -495,4 +495,96 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn empty_and_single_byte_slices() {
+        let mut a = FxHasher::default();
+        a.write(&[]);
+        let empty = a.finish();
+
+        let mut b = FxHasher::default();
+        b.write(&[]);
+        assert_eq!(b.finish(), empty);
+
+        let mut c = FxHasher::default();
+        c.write(&[0]);
+        let single = c.finish();
+
+        let mut d = FxHasher::default();
+        d.write(&[0]);
+        assert_eq!(d.finish(), single);
+
+        assert_ne!(empty, single);
+    }
+
+    #[test]
+    fn mixed_write_methods_distinct_from_slice_write() {
+        let bytes: &[u8] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+        let mut bulk = FxHasher::default();
+        bulk.write(bytes);
+        let bulk_hash = bulk.finish();
+
+        // write_u8 sequence is distinct from write(&[...])
+        let mut by_u8 = FxHasher::default();
+        for &b in bytes {
+            by_u8.write_u8(b);
+        }
+        assert_ne!(bulk_hash, by_u8.finish());
+
+        // write_u32 sequence is distinct from write(&[...])
+        let mut by_u32 = FxHasher::default();
+        by_u32.write_u32(u32::from_le_bytes([1, 2, 3, 4]));
+        by_u32.write_u32(u32::from_le_bytes([5, 6, 7, 8]));
+        by_u32.write_u32(u32::from_le_bytes([9, 10, 11, 12]));
+        assert_ne!(bulk_hash, by_u32.finish());
+
+        // write_u64 sequence is distinct from write(&[...])
+        let mut by_u64 = FxHasher::default();
+        by_u64.write_u64(u64::from_le_bytes([1, 2, 3, 4, 5, 6, 7, 8]));
+        by_u64.write_u64(u64::from_le_bytes([9, 10, 11, 12, 0, 0, 0, 0]));
+        assert_ne!(bulk_hash, by_u64.finish());
+    }
+
+    #[test]
+    fn write_methods_are_deterministic() {
+        let mut a = FxHasher::default();
+        a.write_u8(1);
+        a.write_u16(2);
+        a.write_u32(3);
+        a.write_u64(4);
+        let hash = a.finish();
+
+        let mut b = FxHasher::default();
+        b.write_u8(1);
+        b.write_u16(2);
+        b.write_u32(3);
+        b.write_u64(4);
+        assert_eq!(b.finish(), hash);
+
+        let mut c = FxHasher::default();
+        c.write(b"deterministic");
+        let hash2 = c.finish();
+
+        let mut d = FxHasher::default();
+        d.write(b"deterministic");
+        assert_eq!(d.finish(), hash2);
+    }
+
+    #[test]
+    fn build_hasher_default_has_zero_seed() {
+        let hasher = FxBuildHasher::default().build_hasher();
+        assert_eq!(hasher.finish(), FxHasher::default().finish());
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn fx_hash_map_roundtrip() {
+        let mut map = crate::FxHashMap::default();
+        map.insert("alpha", 1);
+        map.insert("beta", 2);
+        assert_eq!(map.get("alpha"), Some(&1));
+        assert_eq!(map.get("beta"), Some(&2));
+        assert_eq!(map.get("gamma"), None);
+    }
 }
