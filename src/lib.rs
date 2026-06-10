@@ -286,7 +286,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
 /// We don't bother avalanching here as we'll feed this hash into a
 /// multiplication after which we take the high bits, which avalanches for us.
 #[inline]
-fn hash_bytes(bytes: &[u8]) -> u64 {
+pub fn hash_bytes(bytes: &[u8]) -> u64 {
     let len = bytes.len();
     let mut s0 = SEED1;
     let mut s1 = SEED2;
