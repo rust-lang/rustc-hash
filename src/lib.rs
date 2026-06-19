@@ -107,7 +107,7 @@ macro_rules! default_impl {
 #[cfg(feature = "nightly")]
 macro_rules! default_impl {
     () => {
-        const impl Default for FxHasher {
+        impl const Default for FxHasher {
             #[inline]
             fn default() -> FxHasher {
                 Self::default()
