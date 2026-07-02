@@ -60,6 +60,8 @@ pub use seeded_state::{FxHashMapSeed, FxHashSetSeed};
 /// The current implementation is a fast polynomial hash with a single
 /// bit rotation as a finishing step designed by Orson Peters.
 #[derive(Clone)]
+#[cfg_attr(not(feature = "nightly"), derive(Default))]
+#[cfg_attr(feature = "nightly", derive_const(Default))]
 pub struct FxHasher {
     hash: usize,
 }
@@ -89,34 +91,6 @@ impl FxHasher {
         FxHasher { hash: 0 }
     }
 }
-
-#[cfg(not(feature = "nightly"))]
-macro_rules! default_impl {
-    () => {
-        impl Default for FxHasher {
-            #[inline]
-            fn default() -> FxHasher {
-                Self::default()
-            }
-        }
-    };
-}
-
-// In order to use the nightly-only `const` syntax, we gate the definition behind a macro so that
-// parsing still succeeds on stable.
-#[cfg(feature = "nightly")]
-macro_rules! default_impl {
-    () => {
-        impl const Default for FxHasher {
-            #[inline]
-            fn default() -> FxHasher {
-                Self::default()
-            }
-        }
-    };
-}
-
-default_impl!();
 
 impl FxHasher {
     #[inline]
