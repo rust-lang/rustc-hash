@@ -10,6 +10,7 @@ jobs:
   release-plz-release:
     name: Release-plz release
     runs-on: ubuntu-latest
+    environment: publish
     permissions:
       contents: write
       pull-requests: read
