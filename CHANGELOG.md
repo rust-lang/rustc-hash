@@ -1,3 +1,22 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [2.1.4](https://github.com/rust-lang/rustc-hash/compare/v2.1.3...v2.1.4) - 2026-10-15
+
+### Other
+
+- Replace `dtolnay/rust-toolchain` with `rustup`
+- Pin `actions/checkout` to 4.4.0 hash
+- Fix pin comment for `release-plz/action`
+- Check GitHub org to avoid failing on forks
+- Add publish environment
+- Configure trusted publishing via release-plz
 # 2.1.3
 
 - [Use derive_const to fix `feature = "nightly"` build](https://github.com/rust-lang/rustc-hash/pull/77)
