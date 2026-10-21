@@ -215,7 +215,7 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
     )) {
         // We compute the full u64 x u64 -> u128 product, this is a single mul
         // instruction on x86-64, one mul plus one mulhi on ARM64.
-        let full = (x as u128).wrapping_mul(y as u128);
+        let full = u128::from(x).wrapping_mul(u128::from(y));
         let lo = full as u64;
         let hi = (full >> 64) as u64;
 
@@ -239,8 +239,8 @@ fn multiply_mix(x: u64, y: u64) -> u64 {
         let hy = (y >> 32) as u32;
 
         // u32 x u32 -> u64 the low bits of one with the high bits of the other.
-        let afull = (lx as u64).wrapping_mul(hy as u64);
-        let bfull = (hx as u64).wrapping_mul(ly as u64);
+        let afull = u64::from(lx).wrapping_mul(u64::from(hy));
+        let bfull = u64::from(hx).wrapping_mul(u64::from(ly));
 
         // Combine, swapping low/high of one of them so the upper bits of the
         // product of one combine with the lower bits of the other.
@@ -271,14 +271,14 @@ fn hash_bytes(bytes: &[u8]) -> u64 {
             s0 ^= u64::from_le_bytes(bytes[0..8].try_into().unwrap());
             s1 ^= u64::from_le_bytes(bytes[len - 8..].try_into().unwrap());
         } else if len >= 4 {
-            s0 ^= u32::from_le_bytes(bytes[0..4].try_into().unwrap()) as u64;
-            s1 ^= u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()) as u64;
+            s0 ^= u64::from(u32::from_le_bytes(bytes[0..4].try_into().unwrap()));
+            s1 ^= u64::from(u32::from_le_bytes(bytes[len - 4..].try_into().unwrap()));
         } else if len > 0 {
             let lo = bytes[0];
             let mid = bytes[len / 2];
             let hi = bytes[len - 1];
-            s0 ^= lo as u64;
-            s1 ^= ((hi as u64) << 8) | mid as u64;
+            s0 ^= u64::from(lo);
+            s1 ^= (u64::from(hi) << 8) | u64::from(mid);
         }
     } else {
         // Handle bulk (can partially overlap with suffix).

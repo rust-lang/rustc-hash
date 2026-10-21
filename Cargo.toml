@@ -10,6 +10,9 @@ repository = "https://github.com/rust-lang/rustc-hash"
 edition = "2021"
 rust-version = "1.77"
 
+[workspace.lints.clippy]
+cast_lossless = "warn"
+
 [features]
 default = ["std"]
 std = []
@@ -18,3 +21,6 @@ rand = ["dep:rand", "std"]
 
 [dependencies]
 rand = { version = "0.9", optional = true }
+
+[lints]
+workspace = true
